@@ -5,7 +5,33 @@ import urllib.request
 import urllib.parse
 
 app = Flask(__name__)
+@app.route("/api/anime")
+def get_anime():
+    query = request.args.get("q", "").strip()
 
+    if query:
+        params = urllib.parse.urlencode({
+            "q": query,
+            "limit": 12,
+            "sfw": "true"
+        })
+        url = "https://api.tenrai.org/v1/anime?" + params
+    else:
+        url = "https://api.tenrai.org/v1/top/anime?limit=12&sfw=true"
+
+    try:
+        req = urllib.request.Request(
+            url,
+            headers={"User-Agent": "Aninews/1.0"}
+        )
+
+        with urllib.request.urlopen(req, timeout=15) as response:
+            data = json.loads(response.read().decode("utf-8"))
+
+        return jsonify(data)
+
+    except Exception as error:
+        return jsonify({"error": str(error)}), 503
 HTML = """
 <!DOCTYPE html>
 <html>
