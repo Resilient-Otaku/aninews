@@ -38,7 +38,141 @@ HTML = """
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Aninews</title>
 
+/* ANINEWS WELCOME SCREEN */
+.welcome-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow-y: auto;
+    background:
+        radial-gradient(circle at 20% 20%, #54218b, transparent 45%),
+        radial-gradient(circle at 80% 80%, #123c83, transparent 45%),
+        #080b18;
+}
+
+.welcome-box {
+    width: 100%;
+    max-width: 650px;
+    padding: 30px;
+    text-align: center;
+    border: 1px solid var(--accent);
+    border-radius: 24px;
+    background: #11152deF;
+    box-shadow: 0 0 35px #7635d855;
+}
+
+.welcome-logo {
+    font-size: 38px;
+    font-weight: bold;
+    color: #c4a0ff;
+    text-shadow: 0 0 18px #9747ff;
+}
+
+.welcome-tagline {
+    color: #67e8f9;
+    letter-spacing: 4px;
+    font-weight: bold;
+}
+
+.welcome-box input {
+    width: 100%;
+    padding: 15px;
+    margin: 15px 0;
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    background: #090e24;
+    color: white;
+    font-size: 16px;
+}
+
+.welcome-button {
+    width: 100%;
+    padding: 15px;
+    border: 0;
+    border-radius: 12px;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    background: linear-gradient(90deg, var(--accent), #2563eb);
+}
+
+#characterGrid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin: 18px 0;
+}
+
+#characterGrid .genre {
+    min-height: 65px;
+    border: 1px solid #7046bb;
+    background: linear-gradient(135deg, #211746, #142b50);
+    transition: 0.25s;
+}
+
+#characterGrid .genre:active {
+    background: linear-gradient(135deg, #853bea, #2563eb);
+    transform: scale(0.96);
+}
+
+#selectedCharacter {
+    color: #67e8f9;
+    font-weight: bold;
+}
+
+@media (max-width: 450px) {
+    .welcome-box {
+        padding: 18px;
+    }
+
+    #characterGrid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+.theme-options {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 15px 0;
+}
+
+.theme-choice {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 3px solid white;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.theme-choice:active {
+    transform: scale(0.85);
+}
+
+.theme-choice.selected {
+    outline: 3px solid var(--accent);
+    outline-offset: 4px;
+    box-shadow: 0 0 15px var(--accent);
+}
+
+.theme-purple { background: #9333ea; }
+.theme-blue { background: #2563eb; }
+.theme-red { background: #dc2626; }
+.theme-cyan { background: #06b6d4; }
+.theme-pink { background: #ec4899; }
+.theme-green { background: #16a34a; }
+
 <style>
+:root {
+    --accent: #9333ea;
+    --accent-glow: #9333ea55;
+}
 * { box-sizing: border-box; }
 body {
     margin: 0;
@@ -220,6 +354,70 @@ footer {
 
 <body>
 
+<div id="welcomeScreen" class="welcome-screen">
+    <div class="welcome-box">
+
+        <div class="welcome-logo">🌌 ANINEWS</div>
+        <h2 class="welcome-tagline">ANIME FOREVER!</h2>
+
+        <p>Create your Animeverse profile</p>
+
+        <input
+            id="usernameInput"
+            type="text"
+            maxlength="20"
+            placeholder="Choose your username"
+        >
+
+<h3>🎨 Choose Your Theme</h3>
+
+<div class="theme-options">
+    <button class="theme-choice theme-purple selected"
+        onclick="changeTheme('#9333ea', this)"
+        aria-label="Purple"></button>
+
+    <button class="theme-choice theme-blue"
+        onclick="changeTheme('#2563eb', this)"
+        aria-label="Blue"></button>
+
+    <button class="theme-choice theme-red"
+        onclick="changeTheme('#dc2626', this)"
+        aria-label="Red"></button>
+
+    <button class="theme-choice theme-cyan"
+        onclick="changeTheme('#06b6d4', this)"
+        aria-label="Cyan"></button>
+
+    <button class="theme-choice theme-pink"
+        onclick="changeTheme('#ec4899', this)"
+        aria-label="Pink"></button>
+
+    <button class="theme-choice theme-green"
+        onclick="changeTheme('#16a34a', this)"
+        aria-label="Green"></button>
+</div>
+
+        <h3>Choose Your Avatar</h3>
+
+        <div class="genres">
+            <button class="genre" onclick="showCharacters('Demon Slayer')">Demon Slayer</button>
+            <button class="genre" onclick="showCharacters('JJK')">JJK</button>
+            <button class="genre" onclick="showCharacters('Tokyo Revengers')">Tokyo Revengers</button>
+        </div>
+
+        <div id="characterGrid" class="anime-grid">
+            <p>Select an anime category!</p>
+        </div>
+
+        <p id="selectedCharacter">No avatar selected</p>
+
+        <button class="welcome-button" onclick="enterAninews()">
+            ENTER ANINEWS ✨
+        </button>
+
+    </div>
+</div>
+
 <header>
     <div class="logo">🌌 ANINEWS</div>
     <div>Animeverse</div>
@@ -391,6 +589,90 @@ function playWhoosh() {
     } catch (error) {
         console.log("Sound unavailable");
     }
+}
+
+const characterList = {
+    "Demon Slayer": [
+        "Tanjiro", "Nezuko", "Zenitsu",
+        "Inosuke", "Giyu", "Shinobu",
+        "Rengoku", "Mitsuri", "Yoriichi"
+    ],
+
+    "JJK": [
+        "Gojo", "Sukuna", "Yuji",
+        "Megumi", "Nobara", "Yuta",
+        "Toji", "Geto", "Nanami"
+    ],
+
+    "Tokyo Revengers": [
+        "Mikey", "Draken", "Takemichi",
+        "Chifuyu", "Baji", "Mitsuya",
+        "Kazutora", "Hakkai", "Izana"
+    ]
+};
+
+let selectedCharacter = "";
+
+function showCharacters(category) {
+    const grid = document.getElementById("characterGrid");
+
+    grid.innerHTML = characterList[category].map(name => `
+        <button class="genre"
+            onclick="chooseCharacter('${name}')">
+            ${name}
+        </button>
+    `).join("");
+}
+
+function chooseCharacter(name) {
+    selectedCharacter = name;
+
+    document.getElementById("selectedCharacter").innerText =
+        "Selected Avatar: " + name;
+}
+
+function enterAninews() {
+    const username =
+        document.getElementById("usernameInput").value.trim();
+
+    if (!username) {
+        alert("Please enter a username!");
+        return;
+    }
+
+    if (!selectedCharacter) {
+        alert("Please select an avatar!");
+        return;
+    }
+
+    localStorage.setItem("aninewsUsername", username);
+    localStorage.setItem("aninewsAvatar", selectedCharacter);
+
+    document.getElementById("welcomeScreen").style.display = "none";
+
+    document.querySelector(".hero h1").innerText =
+        "Welcome, " + username + "!";
+
+    showPage("home");
+}
+function changeTheme(color, button) {document.documentElement.style.setProperty("--accent", color);
+document.documentElement.style.setProperty("--accent-glow", color + "55");
+    document.querySelectorAll(".theme-choice").forEach(b => {
+        b.classList.remove("selected");
+    });
+
+    button.classList.add("selected");
+
+    const box = document.querySelector(".welcome-box");
+    const logo = document.querySelector(".welcome-logo");
+    const enter = document.querySelector(".welcome-button");
+
+    box.style.borderColor = color;
+    box.style.boxShadow = `0 0 35px ${color}55`;
+    logo.style.color = color;
+    enter.style.background = `linear-gradient(90deg, ${color}, #2563eb)`;
+
+    localStorage.setItem("aninewsTheme", color);
 }
 function createCards(list) {
     return list.map(a => `
