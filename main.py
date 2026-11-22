@@ -160,6 +160,62 @@ footer {
     color: #8d96b7;
     font-size: 12px;
 }
+.carousel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.carousel-window {
+    flex: 1;
+    overflow: hidden;
+    min-width: 0;
+}
+
+.carousel-track {
+    display: flex;
+    gap: 15px;
+    transition: transform 0.55s ease;
+    will-change: transform;
+}
+
+.carousel-track .card {
+    flex: 0 0 180px;
+    min-width: 0;
+    transition: box-shadow 0.4s, border-color 0.4s;
+}
+
+.carousel-track .card:nth-child(4n+1) {
+    border-color: #a855f7;
+    box-shadow: 0 0 12px #9333ea55;
+}
+
+.carousel-track .card:nth-child(4n+2) {
+    border-color: #3b82f6;
+    box-shadow: 0 0 12px #2563eb55;
+}
+
+.carousel-track .card:nth-child(4n+3) {
+    border-color: #06b6d4;
+    box-shadow: 0 0 12px #06b6d455;
+}
+
+.carousel-track .card:nth-child(4n+4) {
+    border-color: #ec4899;
+    box-shadow: 0 0 12px #ec489955;
+}
+
+.arrow {
+    background: #29204e;
+    color: white;
+    border: 1px solid #a78bfa;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    font-size: 17px;
+}
 </style>
 </head>
 
@@ -190,7 +246,15 @@ footer {
     </div>
 
     <h2>🔥 Trending Anime</h2>
-    <div class="anime-grid" id="homeGrid"></div>
+    <div class="carousel">
+    <button class="arrow" onclick="slideAnime(-1)">❮</button>
+
+    <div class="carousel-window" id="carouselWindow">
+        <div class="carousel-track" id="homeGrid"></div>
+    </div>
+
+    <button class="arrow" onclick="slideAnime(1)">❯</button>
+</div>
 </section>
 
 <section id="explore" class="page">
@@ -260,7 +324,63 @@ const anime = [
 ];
 
 let selectedGenre = "All";
+let carouselIndex = 0;
 
+function slideAnime(direction) {
+    const track = document.getElementById("homeGrid");
+    const cards = track.querySelectorAll(".card");
+
+    if (cards.length === 0) return;
+
+    const cardWidth = cards[0].offsetWidth + 15;
+    const visibleCards = Math.max(
+        1,
+        Math.floor(track.parentElement.offsetWidth / cardWidth)
+    );
+
+    const maxIndex = Math.max(0, cards.length - visibleCards);
+
+    carouselIndex = Math.max(
+        0,
+        Math.min(maxIndex, carouselIndex + direction)
+    );
+
+    track.style.transform =
+        `translateX(-${carouselIndex * cardWidth}px)`;
+
+    playWhoosh();
+}
+function playWhoosh() {
+    try {
+        const AudioContext =
+            window.AudioContext || window.webkitAudioContext;
+
+        const audio = new AudioContext();
+        const oscillator = audio.createOscillator();
+        const gain = audio.createGain();
+
+        oscillator.type = "sawtooth";
+        oscillator.frequency.setValueAtTime(500, audio.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(
+            100, audio.currentTime + 0.25
+        );
+
+        gain.gain.setValueAtTime(0.08, audio.currentTime);
+        gain.gain.exponentialRampToValueAtTime(
+            0.001, audio.currentTime + 0.25
+        );
+
+        oscillator.connect(gain);
+        gain.connect(audio.destination);
+
+        oscillator.start();
+        oscillator.stop(audio.currentTime + 0.25);
+
+        oscillator.onended = () => audio.close();
+    } catch (error) {
+        console.log("Sound unavailable");
+    }
+}
 function createCards(list) {
  return list.map(a => `
  <div class="card">
@@ -305,7 +425,7 @@ function askBot() {
 }
 
 document.getElementById("homeGrid").innerHTML =
- createCards(anime.slice(0,4));
+ createCards(anime)
 </script>
 
 </body>
