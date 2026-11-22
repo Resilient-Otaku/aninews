@@ -12,13 +12,12 @@ def get_anime():
     if query:
         params = urllib.parse.urlencode({
             "q": query,
-            "limit": 12,
+            "limit": 67,
             "sfw": "true"
         })
         url = "https://api.tenrai.org/v1/anime?" + params
     else:
-        url = "https://api.tenrai.org/v1/top/anime?limit=12&sfw=true"
-
+        url = "https://api.tenrai.org/v1/top/anime?limit=67&sfw=true"
     try:
         req = urllib.request.Request(
             url,
