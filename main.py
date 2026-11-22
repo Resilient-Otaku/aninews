@@ -62,7 +62,7 @@ HTML = """
     border: 1px solid var(--accent);
     border-radius: 24px;
     background: #11152deF;
-    box-shadow: 0 0 35px #7635d855;
+    box-shadow: 0 0 35px var(--accent-glow);
 }
 
 .welcome-logo {
