@@ -310,19 +310,31 @@ footer {
 <footer>ANINEWS © 2026 | Discover. Explore. Connect.</footer>
 
 <script>
-const anime = [
- {name:"Jujutsu Kaisen",genre:"Action",icon:"👊"},
- {name:"Demon Slayer",genre:"Action",icon:"⚔️"},
- {name:"Your Name",genre:"Romance",icon:"🌠"},
- {name:"Blue Lock",genre:"Sports",icon:"⚽"},
- {name:"Death Note",genre:"Mystery",icon:"📓"},
- {name:"Black Clover",genre:"Fantasy",icon:"🍀"},
- {name:"Suzume",genre:"Fantasy",icon:"🚪"},
- {name:"Chainsaw Man",genre:"Action",icon:"🪚"},
- {name:"Weathering With You",genre:"Romance",icon:"🌧️"},
- {name:"Attack on Titan",genre:"Action",icon:"🛡️"}
-];
+let anime = [];
+async function loadAnime() {
+    try {
+        const response = await fetch("/api/anime");
+        const result = await response.json();
 
+        if (result.error) {
+            throw new Error(result.error);
+        }
+
+        anime = result.data || [];
+
+        document.getElementById("homeGrid").innerHTML =
+            createCards(anime);
+
+        filterAnime();
+
+    } catch (error) {
+        console.error("Anime loading failed:", error);
+        document.getElementById("homeGrid").innerHTML =
+            "<p>Unable to load anime. Please refresh.</p>";
+    }
+}
+
+loadAnime();
 let selectedGenre = "All";
 let carouselIndex = 0;
 
@@ -382,25 +394,39 @@ function playWhoosh() {
     }
 }
 function createCards(list) {
- return list.map(a => `
- <div class="card">
-   <div class="poster">${a.icon}</div>
-   <div class="info">
-     <h3>${a.name}</h3>
-     <span class="tag">${a.genre}</span>
-   </div>
- </div>
- `).join("");
+    return list.map(a => `
+        <div class="card">
+            <div class="poster">
+                <img src="${a.images?.jpg?.large_image_url || a.images?.jpg?.image_url || ''}"
+                     alt="${a.title_english || a.title}"
+                     style="width:100%;height:100%;object-fit:cover;border-radius:12px;">
+            </div>
+
+            <div class="info">
+                <h3>${a.title_english || a.title}</h3>
+                <span class="tag">
+                    ${a.genres?.map(g => g.name).slice(0, 2).join(" • ") || "Anime"}
+                </span>
+                <p>⭐ ${a.score || "N/A"}</p>
+            </div>
+        </div>
+    `).join("");
 }
 
 function filterAnime() {
- const q = document.getElementById("search").value.toLowerCase();
- const results = anime.filter(a =>
-   a.name.toLowerCase().includes(q) &&
-   (selectedGenre === "All" || a.genre === selectedGenre)
- );
- document.getElementById("exploreGrid").innerHTML =
-   results.length ? createCards(results) : "<p>No anime found.</p>";
+    const q = document.getElementById("search").value.toLowerCase();
+
+    const results = anime.filter(a => {
+        const title = (a.title_english || a.title || "").toLowerCase();
+
+        const genres = (a.genres || []).map(g => g.name);
+
+        return title.includes(q) &&
+            (selectedGenre === "All" || genres.includes(selectedGenre));
+    });
+
+    document.getElementById("exploreGrid").innerHTML =
+        results.length ? createCards(results) : "<p>No anime found.</p>";
 }
 
 function setGenre(genre) {
