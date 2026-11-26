@@ -348,7 +348,17 @@ footer {
     height: 36px;
     flex-shrink: 0;
     font-size: 17px;
+}.arrow {
+    /* existing arrow styles */
 }
+
+/* ANINEWS WELCOME SCREEN */
+.welcome-screen {
+    /* welcome screen styles */
+}
+
+/* other welcome CSS */
+
 </style>
 </head>
 
